@@ -1,69 +1,95 @@
-# Adding a new ERC-20 ↔ ERC-7984 pair to WrapHub
+# Adding new wrapper pairs to WrapHub
 
-WrapHub uses a **hybrid registry source**:
+WrapHub uses a hybrid registry source model.
 
-1. **Official onchain Wrappers Registry (primary source of truth).**
-   On load, WrapHub reads `getTokenPairsSlice` from the Sepolia registry at
-   `0x2f0750Bbb0A246059d80e94c454586a7F27a128e` and renders every pair it returns,
-   including its onchain `isValid` flag and live ERC-20 metadata. **You do not need
-   to change any code for a pair that is added to the official registry — WrapHub
-   discovers it automatically on the next load.** (Registry writes are owner-only;
-   pairs are added by the Zama protocol team.)
+The app separates:
 
-2. **S1 evidence snapshot (fallback).**
-   If the live read fails (RPC outage, offline demo), WrapHub falls back to the
-   verified snapshot in `app/src/registry/pairs.official.ts` (captured from the
-   live registry on 2026-07-02, see `registry.json` at the repo root) and labels
-   the grid "Snapshot fallback" so nobody mistakes stale data for live data.
+1. Official Sepolia wrapper pairs
+2. Live onchain validation
+3. Local development-only pairs
 
-3. **Local config (custom / dev-only pairs).**
-   For pairs that are *not* in the official registry — e.g. a wrapper you deployed
-   yourself for development — add them to `app/src/registry/pairs.local.json`:
+This distinction is intentional. WrapHub should not make a local pair look like an official Zama registry pair.
 
-   ```json
-   {
-     "pairs": [
-       {
-         "symbol": "MYTOKENMock",
-         "name": "My Token (Mock)",
-         "erc20": "0xYourErc20Address...",
-         "wrapper": "0xYourErc7984WrapperAddress...",
-         "decimals": 18
-       }
-     ]
-   }
-   ```
+## Official pairs
 
-   Rebuild (`npm run build`) or let the dev server hot-reload. Local pairs render
-   with a **"Local config · dev-only"** badge, are never shown as
-   "Registry: valid", and are read-only (no faucet/wrap actions) — WrapHub does
-   not pretend a local pair is official. To decrypt a local wrapper balance, use
-   the **Decrypt any token** tab, which works with any ERC-7984 address.
+Official pairs are stored in:
 
-## Worked example
+    app/src/registry/pairs.official.ts
 
-Add this to `pairs.local.json` (using the official cUSDCMock addresses purely to
-demonstrate the mechanics — in practice you'd use your own deployment):
+These pairs were captured from the official Sepolia Wrappers Registry during the registry spike.
 
-```json
-{
-  "pairs": [
+On app load, WrapHub re-validates each official wrapper against the live Sepolia registry contract:
+
+    0x2f0750Bbb0A246059d80e94c454586a7F27a128e
+
+The validation checks whether each confidential wrapper is currently recognized by the live registry.
+
+This means the pair list is evidence-derived, while the validity state is checked live onchain.
+
+## Local development pairs
+
+Local or custom pairs are stored in:
+
+    app/src/registry/pairs.local.json
+
+Use this file for:
+
+- local testing;
+- development-only wrappers;
+- experimental pairs;
+- custom deployments not yet part of the official Sepolia registry.
+
+Local pairs should remain clearly labeled as local or development-only. They should not be presented as official registry pairs unless they are actually validated by the live registry.
+
+## Adding a local pair
+
+Add an entry to app/src/registry/pairs.local.json with the same shape as the existing examples.
+
+Recommended fields:
+
     {
-      "symbol": "DEMOLocal",
-      "name": "Demo Local Pair",
-      "erc20": "0x9b5Cd13b8eFbB58Dc25A05CF411D8056058aDFfF",
-      "wrapper": "0x7c5BF43B851c1dff1a4feE8dB225b87f2C223639",
-      "decimals": 6
+      "symbol": "MYTOKEN",
+      "name": "My Token",
+      "underlying": "0x...",
+      "wrapper": "0x...",
+      "underlyingDecimals": 18,
+      "wrapperDecimals": 6,
+      "network": "sepolia",
+      "source": "local"
     }
-  ]
-}
-```
 
-Reload: a ninth card appears with the blue "Local config · dev-only" badge and no
-action button. Remove the entry to return to the 8 official pairs.
+After editing the file, run:
 
-## How validity is decided
+    cd app
+    npm run build
 
-- Official pairs: `isValid` comes from the onchain registry row, re-read on every load.
-- Local pairs: always displayed as local/dev-only. If your pair later gets added to
-  the official registry, delete it from `pairs.local.json` — the live read takes over.
+Then open the dApp locally and confirm that the pair is displayed as a local or development pair, not as an official registry-validated pair.
+
+## Adding a new official pair
+
+If Zama adds a new official wrapper pair to Sepolia, update the official snapshot only after verifying the pair against the live registry.
+
+Recommended process:
+
+1. Confirm the underlying ERC-20 token address.
+2. Confirm the ERC-7984 wrapper address.
+3. Confirm decimals for both the underlying token and wrapper display.
+4. Verify the wrapper against the official Wrappers Registry.
+5. Add the pair to app/src/registry/pairs.official.ts.
+6. Run a local build.
+7. Test the pair in the dApp.
+8. Update README evidence if needed.
+
+## Why WrapHub does not treat local pairs as official
+
+Local pairs are useful for builders, but they are not the same as official Zama registry entries.
+
+WrapHub keeps the distinction visible so that judges, users, and developers can trust what the UI is showing:
+
+- official pairs are evidence-derived and live-validated;
+- local pairs are configurable and development-only;
+- failed registry checks are surfaced honestly.
+
+## Safety rule
+
+Do not add a pair to the official list unless it can be verified against the live Sepolia Wrappers Registry.
