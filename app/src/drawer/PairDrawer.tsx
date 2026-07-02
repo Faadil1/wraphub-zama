@@ -35,9 +35,16 @@ function PhasePill({ phase }: { phase: Phase }) {
 
 export default function PairDrawer({ pair, onClose }: { pair: OfficialPair; onClose: () => void }) {
   const PAIR = pair;
-  const MINT_AMOUNT = 10n * 10n ** BigInt(PAIR.decimals); // 10 display tokens — S2 canon
-  const FLOW_AMOUNT = 1n * 10n ** BigInt(PAIR.decimals);  // 1 display token — S3 canon
+  const MINT_AMOUNT = 10n * 10n ** BigInt(PAIR.decimals);   // 10 display tokens, UNDERLYING units — S2 canon
+  const SHIELD_AMOUNT = 1n * 10n ** BigInt(PAIR.decimals);   // 1 display token, UNDERLYING units (shield takes underlying)
   const fmt = (v: bigint) => (Number(v) / 10 ** PAIR.decimals).toFixed(2);
+  // ERC-7984 wrappers store confidential amounts in WRAPPER-scale units (uint64-backed;
+  // e.g. cWETHMock is 6-dec over an 18-dec underlying). decrypt results and unshield
+  // amounts are wrapper-scale. Read wrapper decimals per pair; identical to underlying
+  // for 6-dec mocks, so USDCMock behavior is unchanged.
+  const [wrapDec, setWrapDec] = useState<number | null>(null);
+  const wfmt = (v: bigint) => wrapDec === null ? String(v) : (Number(v) / 10 ** wrapDec).toFixed(2);
+  const UNSHIELD_AMOUNT = wrapDec === null ? null : 1n * 10n ** BigInt(wrapDec); // 1 display token, WRAPPER units
   const [session, setSession] = useState<Session | null>(null);
   const [connErr, setConnErr] = useState<{ kind: string; message: string } | null>(null);
   const [publicBal, setPublicBal] = useState<bigint | null>(null);
@@ -50,7 +57,7 @@ export default function PairDrawer({ pair, onClose }: { pair: OfficialPair; onCl
   const [unshield, setUnshield] = useState<ActionState>(idle());
 
   const reset = () => {
-    setPublicBal(null); setHandle(null); setHasPermit(null); setPlaintext(null);
+    setPublicBal(null); setHandle(null); setHasPermit(null); setPlaintext(null); setWrapDec(null);
     setMint(idle()); setShield(idle()); setDecrypt(idle()); setUnshield(idle());
   };
 
@@ -60,6 +67,7 @@ export default function PairDrawer({ pair, onClose }: { pair: OfficialPair; onCl
     const wrapped = s.sdk.createToken(PAIR.wrapper);
     const h = await wrapped.confidentialBalanceOf(s.address);
     setHandle(String(h));
+    setWrapDec(await wrapped.decimals());
     setHasPermit(await s.sdk.permits.hasPermit([PAIR.wrapper]));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [PAIR.wrapper, PAIR.erc20]);
@@ -101,12 +109,12 @@ export default function PairDrawer({ pair, onClose }: { pair: OfficialPair; onCl
     setShield({ phase: "pending", txs: [] });
     const txs: { label: string; hash: string }[] = [];
     const wrapped = s.sdk.createWrappedToken(PAIR.wrapper);
-    const res = await wrapped.shield(FLOW_AMOUNT, {
+    const res = await wrapped.shield(SHIELD_AMOUNT, {
       onApprovalSubmitted: (h: string) => { txs.push({ label: "approve", hash: h }); setShield({ phase: "pending", txs: [...txs] }); },
       onShieldSubmitted:   (h: string) => { txs.push({ label: "shield",  hash: h }); setShield({ phase: "pending", txs: [...txs] }); },
     });
     if (!txs.find((t) => t.hash === res.txHash)) txs.push({ label: "shield", hash: res.txHash });
-    setShield({ phase: "done", txs, note: `Shielded ${fmt(FLOW_AMOUNT)} → c${PAIR.symbol}` });
+    setShield({ phase: "done", txs, note: `Shielded ${fmt(SHIELD_AMOUNT)} ${PAIR.symbol} → c${PAIR.symbol}` });
     setPlaintext(null); // stale after balance change
     await refresh(s);
   }, setShield);
@@ -123,19 +131,23 @@ export default function PairDrawer({ pair, onClose }: { pair: OfficialPair; onCl
     const results = await s.sdk.decryption.decryptValues([{ encryptedValue: h, contractAddress: PAIR.wrapper }]);
     const v = (results as Record<string, unknown>)[String(h)];
     setPlaintext(String(v));
-    setDecrypt({ phase: "done", txs: [], note: `Decrypted own balance: ${fmt(BigInt(String(v)))} c${PAIR.symbol}` });
+    setDecrypt({ phase: "done", txs: [], note: `Decrypted own balance: ${wfmt(BigInt(String(v)))} c${PAIR.symbol} (wrapper units)` });
   }, setDecrypt);
 
   const doUnshield = guard(async (s) => {
+    if (UNSHIELD_AMOUNT === null) throw new Error("Wrapper decimals not loaded yet — reopen the drawer or wait for facts to populate.");
     setUnshield({ phase: "pending", txs: [] });
+    // Re-read current confidential handle before unshield so the SDK balance check
+    // runs against the live post-shield state, not a stale view.
+    await refresh(s);
     const txs: { label: string; hash: string }[] = [];
     const wrapped = s.sdk.createWrappedToken(PAIR.wrapper);
-    await wrapped.unshield(FLOW_AMOUNT, {
+    await wrapped.unshield(UNSHIELD_AMOUNT, {
       onUnwrapSubmitted:   (h: string) => { txs.push({ label: "unwrap", hash: h }); setUnshield({ phase: "pending", txs: [...txs] }); },
       onFinalizing:        ()  => { setUnshield({ phase: "finalizing", txs: [...txs] }); },
       onFinalizeSubmitted: (h: string) => { txs.push({ label: "finalize", hash: h }); setUnshield({ phase: "finalizing", txs: [...txs] }); },
     });
-    setUnshield({ phase: "done", txs, note: `Unshielded ${fmt(FLOW_AMOUNT)} back to ${PAIR.symbol}` });
+    setUnshield({ phase: "done", txs, note: `Unshielded ${wfmt(UNSHIELD_AMOUNT!)} c${PAIR.symbol} back to ${PAIR.symbol}` });
     setPlaintext(null);
     await refresh(session!);
   }, setUnshield);
@@ -160,16 +172,17 @@ export default function PairDrawer({ pair, onClose }: { pair: OfficialPair; onCl
             <div><dt>Wallet</dt><dd className="mono">{session.address}</dd></div>
             <div><dt>Network</dt><dd>Sepolia ✓</dd></div>
             <div><dt>Public {PAIR.symbol}</dt><dd className="mono">{publicBal === null ? "…" : fmt(publicBal)}</dd></div>
+            <div><dt>Wrapper decimals</dt><dd className="mono">{wrapDec === null ? "…" : `${wrapDec} (underlying: ${PAIR.decimals})`}</dd></div>
             <div><dt>Encrypted handle</dt><dd className="mono handle">{handle ?? "…"}</dd></div>
             <div><dt>Permit</dt><dd>{hasPermit === null ? "…" : hasPermit ? "granted" : "not granted"}</dd></div>
-            <div><dt>Decrypted balance</dt><dd className="mono">{plaintext === null ? "— (run Decrypt)" : `${fmt(BigInt(plaintext))} c${PAIR.symbol}`}</dd></div>
+            <div><dt>Decrypted balance</dt><dd className="mono">{plaintext === null ? "— (run Decrypt)" : `${wfmt(BigInt(plaintext))} c${PAIR.symbol}`}</dd></div>
           </dl>
 
           {([
             ["1 · Mint (faucet)", `Mint ${fmt(MINT_AMOUNT)} ${PAIR.symbol} via mint()`, mint, doMint],
-            ["2 · Shield", `Wrap ${fmt(FLOW_AMOUNT)} ${PAIR.symbol} → encrypted c${PAIR.symbol}`, shield, doShield],
+            ["2 · Shield", `Wrap ${fmt(SHIELD_AMOUNT)} ${PAIR.symbol} → encrypted c${PAIR.symbol}`, shield, doShield],
             ["3 · Decrypt", "EIP-712 permit, then decrypt your own confidential balance", decrypt, doDecrypt],
-            ["4 · Unshield", `Unwrap ${fmt(FLOW_AMOUNT)} back — two onchain phases (unwrap, finalize)`, unshield, doUnshield],
+            ["4 · Unshield", `Unwrap 1 display token back — two onchain phases (unwrap, finalize)`, unshield, doUnshield],
           ] as const).map(([title, desc, st, run]) => (
             <section className="action" key={title}>
               <div className="action-head">
