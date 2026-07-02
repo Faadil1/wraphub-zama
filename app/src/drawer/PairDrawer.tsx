@@ -1,19 +1,16 @@
-// USDCMock action drawer — Step 4. Judge path: Mint → Shield → Decrypt → Unshield.
-// USDCMock only by design; generalization is Step 5. No animations.
+// Pair action drawer — Step 5 generalization of the live-tested Step 4 flow.
+// Judge path per faucet-eligible mock pair: Mint → Shield → Decrypt → Unshield.
+// Call sequences are S3/S4/S5 canon — do not alter. No animations.
 import { useCallback, useEffect, useState } from "react";
 import { ethers } from "ethers";
 import { connectSepolia, explainError, type Session } from "../lib/zama";
-import { OFFICIAL_PAIRS } from "../registry/pairs.official";
+import type { OfficialPair } from "../registry/pairs.official";
 import "./drawer.css";
 
-const PAIR = OFFICIAL_PAIRS[0]; // USDCMock — S1/S3/S4 proven pair
-const MINT_AMOUNT = 10n * 10n ** 6n;   // 10 USDCMock (6 decimals) — S2 canon
-const FLOW_AMOUNT = 1n * 10n ** 6n;    // 1 USDCMock per shield/unshield — S3 canon
 const ERC20_ABI = [
   "function mint(address to, uint256 amount)",
   "function balanceOf(address) view returns (uint256)",
 ];
-const fmt = (v: bigint) => (Number(v) / 10 ** PAIR.decimals).toFixed(2);
 const scanTx = (h: string) => `https://sepolia.etherscan.io/tx/${h}`;
 
 type Phase = "idle" | "pending" | "finalizing" | "done" | "error";
@@ -36,7 +33,11 @@ function PhasePill({ phase }: { phase: Phase }) {
   return <span className={`phase phase-${phase}`}>{text}</span>;
 }
 
-export default function UsdcDrawer({ onClose }: { onClose: () => void }) {
+export default function PairDrawer({ pair, onClose }: { pair: OfficialPair; onClose: () => void }) {
+  const PAIR = pair;
+  const MINT_AMOUNT = 10n * 10n ** BigInt(PAIR.decimals); // 10 display tokens — S2 canon
+  const FLOW_AMOUNT = 1n * 10n ** BigInt(PAIR.decimals);  // 1 display token — S3 canon
+  const fmt = (v: bigint) => (Number(v) / 10 ** PAIR.decimals).toFixed(2);
   const [session, setSession] = useState<Session | null>(null);
   const [connErr, setConnErr] = useState<{ kind: string; message: string } | null>(null);
   const [publicBal, setPublicBal] = useState<bigint | null>(null);
@@ -48,6 +49,11 @@ export default function UsdcDrawer({ onClose }: { onClose: () => void }) {
   const [decrypt, setDecrypt] = useState<ActionState>(idle());
   const [unshield, setUnshield] = useState<ActionState>(idle());
 
+  const reset = () => {
+    setPublicBal(null); setHandle(null); setHasPermit(null); setPlaintext(null);
+    setMint(idle()); setShield(idle()); setDecrypt(idle()); setUnshield(idle());
+  };
+
   const refresh = useCallback(async (s: Session) => {
     const erc20 = new ethers.Contract(PAIR.erc20, ERC20_ABI, s.provider);
     setPublicBal(await erc20.balanceOf(s.address));
@@ -55,19 +61,22 @@ export default function UsdcDrawer({ onClose }: { onClose: () => void }) {
     const h = await wrapped.confidentialBalanceOf(s.address);
     setHandle(String(h));
     setHasPermit(await s.sdk.permits.hasPermit([PAIR.wrapper]));
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [PAIR.wrapper, PAIR.erc20]);
 
   useEffect(() => {
+    reset();
     (async () => {
       try {
-        const s = await connectSepolia();
-        setSession(s);
+        const s = session ?? (await connectSepolia());
+        if (!session) setSession(s);
         await refresh(s);
       } catch (e) {
         setConnErr(explainError(e));
       }
     })();
-  }, [refresh]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [PAIR.wrapper]);
 
   const guard = (fn: (s: Session) => Promise<void>, set: (a: ActionState) => void) => async () => {
     if (!session) return;

@@ -2,12 +2,13 @@
 import { useState } from "react";
 import RegistryGrid from "./registry/RegistryGrid";
 import Probe from "./Probe";
-import UsdcDrawer from "./drawer/UsdcDrawer";
+import PairDrawer from "./drawer/PairDrawer";
+import type { OfficialPair } from "./registry/pairs.official";
 import "./registry/registry.css";
 
 export default function App() {
   const [tab, setTab] = useState<"registry" | "probe">("registry");
-  const [drawer, setDrawer] = useState(false);
+  const [drawerPair, setDrawerPair] = useState<OfficialPair | null>(null);
   return (
     <div className="app-shell">
       <header className="app-top">
@@ -20,8 +21,8 @@ export default function App() {
           <button className="tab" role="tab" aria-selected={tab === "probe"} onClick={() => setTab("probe")}>S5 probe</button>
         </nav>
       </header>
-      {tab === "registry" ? <RegistryGrid onOpenUsdc={() => setDrawer(true)} /> : <Probe />}
-      {drawer && <UsdcDrawer onClose={() => setDrawer(false)} />}
+      {tab === "registry" ? <RegistryGrid onOpenPair={setDrawerPair} /> : <Probe />}
+      {drawerPair && <PairDrawer key={drawerPair.wrapper} pair={drawerPair} onClose={() => setDrawerPair(null)} />}
     </div>
   );
 }

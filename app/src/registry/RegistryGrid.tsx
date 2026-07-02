@@ -41,19 +41,19 @@ function PairCard({ p, startHere, onOpen }: { p: OfficialPair; startHere: boolea
       </div>
       <footer className="pair-foot">
         {p.faucet ? (
-          <span className="badge badge-faucet">Faucet: mint()</span>
+          <>
+            <span className="badge badge-faucet">Faucet: mint()</span>
+            {onOpen && <button className="open-actions" onClick={onOpen}>Open actions →</button>}
+          </>
         ) : (
-          <span className="badge badge-nofaucet">No faucet (non-mock)</span>
-        )}
-        {onOpen && (
-          <button className="open-actions" onClick={onOpen}>Open actions →</button>
+          <span className="badge badge-nofaucet">No faucet / read-only (non-mock)</span>
         )}
       </footer>
     </article>
   );
 }
 
-export default function RegistryGrid({ onOpenUsdc }: { onOpenUsdc?: () => void }) {
+export default function RegistryGrid({ onOpenPair }: { onOpenPair?: (p: OfficialPair) => void }) {
   return (
     <section className="registry">
       <header className="registry-head">
@@ -68,7 +68,7 @@ export default function RegistryGrid({ onOpenUsdc }: { onOpenUsdc?: () => void }
       </header>
       <div className="pair-grid">
         {OFFICIAL_PAIRS.map((p) => (
-          <PairCard key={p.wrapper} p={p} startHere={p.symbol === "USDCMock"} onOpen={p.symbol === "USDCMock" ? onOpenUsdc : undefined} />
+          <PairCard key={p.wrapper} p={p} startHere={p.symbol === "USDCMock"} onOpen={p.faucet && onOpenPair ? () => onOpenPair(p) : undefined} />
         ))}
       </div>
     </section>
