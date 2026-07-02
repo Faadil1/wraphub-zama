@@ -43,3 +43,7 @@ S5 browser dApp viability gate:
 
 ## Registry sourcing (hybrid model)
 (see docs/ADD-NEW-PAIR.md)
+
+## Live
+
+Live dApp: https://faadil1.github.io/wraphub-zama/
