@@ -1,0 +1,130 @@
+{
+  "generatedAt": "2026-07-02T02:29:24.476Z",
+  "wallet": "0x48F5b9e0fcC28A62167d45db1bc527da3267d753",
+  "before": {
+    "publicBalance": "9000000",
+    "encryptedBalanceHandle": "0xac19572fe41b056f403609e3e167de180ba953cc9bff0000000000aa36a70500"
+  },
+  "decryptConfirm": {
+    "decrypted": {
+      "0xac19572fe41b056f403609e3e167de180ba953cc9bff0000000000aa36a70500": "1000000"
+    },
+    "decryptedBalance": "1000000"
+  },
+  "phaseEvents": [
+    {
+      "phase": "onUnwrapSubmitted",
+      "txHash": "0xbdb82500f9d51c5cba0739b8681b4ce86501c0c8ac734e119fd586108594130f"
+    },
+    {
+      "phase": "onFinalizing"
+    },
+    {
+      "phase": "onFinalizeSubmitted",
+      "txHash": "0x9c4f33c77d9c9a70ecf4e9b34118303ea6ff7ed756f82871ef357f83211f4423"
+    }
+  ],
+  "sdkEvents": [
+    {
+      "type": "decrypt:start",
+      "encryptedValues": [
+        "0xac19572fe41b056f403609e3e167de180ba953cc9bff0000000000aa36a70500"
+      ],
+      "timestamp": 1782959387843
+    },
+    {
+      "type": "decrypt:end",
+      "durationMs": 3226,
+      "encryptedValues": [
+        "0xac19572fe41b056f403609e3e167de180ba953cc9bff0000000000aa36a70500"
+      ],
+      "result": {
+        "0xac19572fe41b056f403609e3e167de180ba953cc9bff0000000000aa36a70500": "1000000"
+      },
+      "timestamp": 1782959391069
+    },
+    {
+      "type": "encrypt:start",
+      "tokenAddress": "0x7c5BF43B851c1dff1a4feE8dB225b87f2C223639",
+      "timestamp": 1782959391113
+    },
+    {
+      "type": "encrypt:end",
+      "durationMs": 15725,
+      "tokenAddress": "0x7c5BF43B851c1dff1a4feE8dB225b87f2C223639",
+      "timestamp": 1782959406838
+    },
+    {
+      "type": "unwrap:submitted",
+      "txHash": "0xbdb82500f9d51c5cba0739b8681b4ce86501c0c8ac734e119fd586108594130f",
+      "tokenAddress": "0x7c5BF43B851c1dff1a4feE8dB225b87f2C223639",
+      "timestamp": 1782959407697
+    },
+    {
+      "type": "unshield:phase1_submitted",
+      "txHash": "0xbdb82500f9d51c5cba0739b8681b4ce86501c0c8ac734e119fd586108594130f",
+      "operationId": "40cf0b6b-983f-4a5e-bdd4-50d714618b6b",
+      "tokenAddress": "0x7c5BF43B851c1dff1a4feE8dB225b87f2C223639",
+      "timestamp": 1782959415994
+    },
+    {
+      "type": "unshield:phase2_started",
+      "operationId": "40cf0b6b-983f-4a5e-bdd4-50d714618b6b",
+      "tokenAddress": "0x7c5BF43B851c1dff1a4feE8dB225b87f2C223639",
+      "timestamp": 1782959416046
+    },
+    {
+      "type": "finalizeUnwrap:submitted",
+      "txHash": "0x9c4f33c77d9c9a70ecf4e9b34118303ea6ff7ed756f82871ef357f83211f4423",
+      "tokenAddress": "0x7c5BF43B851c1dff1a4feE8dB225b87f2C223639",
+      "timestamp": 1782959419240
+    },
+    {
+      "type": "unshield:phase2_submitted",
+      "txHash": "0x9c4f33c77d9c9a70ecf4e9b34118303ea6ff7ed756f82871ef357f83211f4423",
+      "operationId": "40cf0b6b-983f-4a5e-bdd4-50d714618b6b",
+      "tokenAddress": "0x7c5BF43B851c1dff1a4feE8dB225b87f2C223639",
+      "timestamp": 1782959427541
+    }
+  ],
+  "unshield": {
+    "status": "PASS",
+    "txHash": "0x9c4f33c77d9c9a70ecf4e9b34118303ea6ff7ed756f82871ef357f83211f4423",
+    "raw": {
+      "txHash": "0x9c4f33c77d9c9a70ecf4e9b34118303ea6ff7ed756f82871ef357f83211f4423",
+      "receipt": {
+        "logs": [
+          {
+            "topics": [
+              "0xc6366bab028b8d033cb362cfd1f2f3457ef4e92fc738b6788b90d5a7846367a0"
+            ],
+            "data": "0x0000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000000000000000019fe58320a487f89bd852a281cafa9c24971a094b00ff0000000000aa36a70500000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000f4240"
+          },
+          {
+            "topics": [
+              "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+              "0x0000000000000000000000007c5bf43b851c1dff1a4fee8db225b87f2c223639",
+              "0x00000000000000000000000048f5b9e0fcc28a62167d45db1bc527da3267d753"
+            ],
+            "data": "0x00000000000000000000000000000000000000000000000000000000000f4240"
+          },
+          {
+            "topics": [
+              "0x87061fd1a5b3714805472c94c9eb8a6b8491992ee77791aa2594be67b92fd962",
+              "0x00000000000000000000000048f5b9e0fcc28a62167d45db1bc527da3267d753",
+              "0x9fe58320a487f89bd852a281cafa9c24971a094b00ff0000000000aa36a70500"
+            ],
+            "data": "0x9fe58320a487f89bd852a281cafa9c24971a094b00ff0000000000aa36a7050000000000000000000000000000000000000000000000000000000000000f4240"
+          }
+        ]
+      }
+    }
+  },
+  "unwrapOnly": null,
+  "resume": null,
+  "after": {
+    "publicBalance": "10000000",
+    "encryptedBalanceHandle": "0xc7b8056ee3982a93ccb03982f2fe1dc7ef441f93a4ff0000000000aa36a70500"
+  },
+  "status": "UNSHIELD_PASS"
+}

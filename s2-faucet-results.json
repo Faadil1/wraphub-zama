@@ -1,0 +1,90 @@
+{
+  "generatedAt": "2026-07-02T01:46:46.297Z",
+  "wallet": "0x48F5b9e0fcC28A62167d45db1bc527da3267d753",
+  "mocks": [
+    {
+      "symbol": "USDCMock",
+      "erc20": "0x9b5Cd13b8eFbB58Dc25A05CF411D8056058aDFfF",
+      "wrapper": "0x7c5BF43B851c1dff1a4feE8dB225b87f2C223639",
+      "decimals": 6,
+      "faucetMethod": "mint(address,uint256)",
+      "status": "LIVE",
+      "txHash": "0x5c4488055bda9aa16cb4f368378ef83ce06fbf1e5c2186530db93048a02fab62",
+      "before": "0",
+      "after": "10000000",
+      "error": null
+    },
+    {
+      "symbol": "USDTMock",
+      "erc20": "0xa7dA08FafDC9097Cc0E7D4f113A61e31d7e8e9b0",
+      "wrapper": "0x4E7B06D78965594eB5EF5414c357ca21E1554491",
+      "decimals": 6,
+      "faucetMethod": "mint(address,uint256)",
+      "status": "LIVE",
+      "txHash": "0x8772a979034dec0e8e72505b53ddabe00cafd6dde8367fd81311dce5211175f4",
+      "before": "0",
+      "after": "10000000",
+      "error": null
+    },
+    {
+      "symbol": "WETHMock",
+      "erc20": "0xff54739b16576FA5402F211D0b938469Ab9A5f3F",
+      "wrapper": "0x46208622DA27d91db4f0393733C8BA082ed83158",
+      "decimals": 18,
+      "faucetMethod": "mint(address,uint256)",
+      "status": "LIVE",
+      "txHash": "0x0a202b857b2e1aa1dc25f95352e9e48ac12ff82c336787f75bc7fe733ac197a6",
+      "before": "0",
+      "after": "10000000000000000000",
+      "error": null
+    },
+    {
+      "symbol": "BRONMock",
+      "erc20": "0xFf021fB13cA64e5354c62c954b949a88cfDEb25E",
+      "wrapper": "0xaa5612FA27c927a0c7961f5AEFEE5ba3A0F9C891",
+      "decimals": 18,
+      "faucetMethod": "mint(address,uint256)",
+      "status": "LIVE",
+      "txHash": "0x6058df5b90d2f91b6c5271de95be6ae481a794f49fb1803fd59a2174e8e05899",
+      "before": "0",
+      "after": "10000000000000000000",
+      "error": null
+    },
+    {
+      "symbol": "ZAMAMock",
+      "erc20": "0x75355a85c6FB9df5f0C80FF54e8747EEe9a0BF57",
+      "wrapper": "0xf2D628d2598aF4eAF94CB76a437Ff86CA78FfbFB",
+      "decimals": 18,
+      "faucetMethod": "mint(address,uint256)",
+      "status": "LIVE",
+      "txHash": "0x448ca0b7c98446612332484edb03fce0b580166471165face0f089df9ae5a8d4",
+      "before": "0",
+      "after": "10000000000000000000",
+      "error": null
+    },
+    {
+      "symbol": "tGBPMock",
+      "erc20": "0x93c931278A2aad1916783F952f94276eA5111442",
+      "wrapper": "0xfCE5c7069c5525eF6c8C2b2E35A745bA20a2F7CC",
+      "decimals": 18,
+      "faucetMethod": "mint(address,uint256)",
+      "status": "LIVE",
+      "txHash": "0x2106e99b7897d5ec8f1c938b197836ecdc9a7616b9ce330fd61e3096b949aa0b",
+      "before": "0",
+      "after": "10000000000000000000",
+      "error": null
+    },
+    {
+      "symbol": "XAUtMock",
+      "erc20": "0x24377AE4AA0C45ecEe71225007f17c5D423dd940",
+      "wrapper": "0xe4FcF848739845BC81Dee1d5352cf3844F0a60C7",
+      "decimals": 6,
+      "faucetMethod": "mint(address,uint256)",
+      "status": "LIVE",
+      "txHash": "0x9ffc4fe3247d3ab9d7b88ec6dd561eea6f48140173bad4a7021e8c035882fc67",
+      "before": "0",
+      "after": "10000000",
+      "error": null
+    }
+  ]
+}

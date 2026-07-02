@@ -1,0 +1,31 @@
+{
+  "generatedAt": "2026-07-02T02:20:51.636Z",
+  "wallet": "0x48F5b9e0fcC28A62167d45db1bc527da3267d753",
+  "chainId": 11155111,
+  "token": {
+    "symbol": "USDCMock",
+    "erc20": "0x9b5Cd13b8eFbB58Dc25A05CF411D8056058aDFfF",
+    "wrapper": "0x7c5BF43B851c1dff1a4feE8dB225b87f2C223639"
+  },
+  "before": {
+    "publicBalance": "9000000"
+  },
+  "permit": {
+    "hadPermitBefore": false,
+    "hasPermitAfter": true
+  },
+  "encryptedBalanceHandle": "0xac19572fe41b056f403609e3e167de180ba953cc9bff0000000000aa36a70500",
+  "decryptedValues": {
+    "0xac19572fe41b056f403609e3e167de180ba953cc9bff0000000000aa36a70500": "1000000"
+  },
+  "decryptedBalance": "1000000",
+  "cleanupUnshield": null,
+  "afterCleanup": {},
+  "status": "FAILED",
+  "error": {
+    "name": "TransactionRevertedError",
+    "message": "Transaction failed during unwrap",
+    "code": "TRANSACTION_REVERTED",
+    "stack": "TransactionRevertedError: Transaction failed during unwrap\n    at G (file:///home/wdecoded92/wraphub-spike/node_modules/@zama-fhe/sdk/dist/esm/token-TQ-VFHS4.js:1:7919)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at async nn.unshield (file:///home/wdecoded92/wraphub-spike/node_modules/@zama-fhe/sdk/dist/esm/index.js:1:26392)\n    at async file:///home/wdecoded92/wraphub-spike/s4-direct-decrypt-probe.mjs:123:22"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "generatedAt": "2026-07-02T02:24:52.132Z",
+  "wallet": "0x48F5b9e0fcC28A62167d45db1bc527da3267d753",
+  "before": {
+    "publicBalance": "9000000",
+    "confidentialHandle": "0xac19572fe41b056f403609e3e167de180ba953cc9bff0000000000aa36a70500"
+  },
+  "unshieldExact": {
+    "status": "FAILED",
+    "name": "TransactionRevertedError",
+    "message": "Transaction failed during unwrap",
+    "code": "TRANSACTION_REVERTED"
+  },
+  "unshieldAll": null,
+  "after": {},
+  "status": "CLEANUP_FAILED",
+  "error": {
+    "name": "TransactionRevertedError",
+    "message": "Transaction failed during unwrapAll",
+    "code": "TRANSACTION_REVERTED",
+    "stack": "TransactionRevertedError: Transaction failed during unwrapAll\n    at G (file:///home/wdecoded92/wraphub-spike/node_modules/@zama-fhe/sdk/dist/esm/token-TQ-VFHS4.js:1:7919)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at async nn.unshieldAll (file:///home/wdecoded92/wraphub-spike/node_modules/@zama-fhe/sdk/dist/esm/index.js:1:26558)\n    at async file:///home/wdecoded92/wraphub-spike/s4-cleanup-unshield.mjs:91:19"
+  }
+}

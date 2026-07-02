@@ -1,0 +1,15 @@
+node_modules/
+.env
+.env.*
+*.log
+.DS_Store
+
+private-key.txt
+wallet.txt
+secret*.txt
+
+.tmp/
+.cache/
+
+# noisy raw debug output
+s4-decrypt-results.json
