@@ -43,7 +43,7 @@ export default function PairDrawer({ pair, onClose }: { pair: OfficialPair; onCl
   // amounts are wrapper-scale. Read wrapper decimals per pair; identical to underlying
   // for 6-dec mocks, so USDCMock behavior is unchanged.
   const [wrapDec, setWrapDec] = useState<number | null>(null);
-  const wfmt = (v: bigint) => wrapDec === null ? String(v) : (Number(v) / 10 ** wrapDec).toFixed(2);
+  const wfmt = (v: bigint) => wrapDec === null ? String(v) : (Number(v) / 10 ** Number(wrapDec)).toFixed(2);
   const UNSHIELD_AMOUNT = wrapDec === null ? null : 1n * 10n ** BigInt(wrapDec); // 1 display token, WRAPPER units
   const [session, setSession] = useState<Session | null>(null);
   const [connErr, setConnErr] = useState<{ kind: string; message: string } | null>(null);
@@ -67,7 +67,8 @@ export default function PairDrawer({ pair, onClose }: { pair: OfficialPair; onCl
     const wrapped = s.sdk.createToken(PAIR.wrapper);
     const h = await wrapped.confidentialBalanceOf(s.address);
     setHandle(String(h));
-    setWrapDec(await wrapped.decimals());
+    // SDK types say number, runtime delivers bigint (ABI uint8) — normalize here.
+    setWrapDec(Number(await wrapped.decimals()));
     setHasPermit(await s.sdk.permits.hasPermit([PAIR.wrapper]));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [PAIR.wrapper, PAIR.erc20]);
