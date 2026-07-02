@@ -17,6 +17,10 @@ type Phase = "idle" | "pending" | "finalizing" | "done" | "error";
 type ActionState = { phase: Phase; txs: { label: string; hash: string }[]; note?: string };
 const idle = (): ActionState => ({ phase: "idle", txs: [] });
 
+function shortAddr(addr: string) {
+  return `${addr.slice(0, 6)}…${addr.slice(-4)}`;
+}
+
 function Tx({ t }: { t: { label: string; hash: string } }) {
   return (
     <div className="tx-row-badge">
@@ -187,7 +191,7 @@ export default function PairDrawer({ pair, onClose }: { pair: OfficialPair; onCl
           </div>
 
           <dl className="facts">
-            <div><dt>Connected Wallet</dt><dd className="mono">{session.address}</dd></div>
+            <div><dt>Connected Wallet</dt><dd className="mono" title={session.address}>{shortAddr(session.address)}</dd></div>
             <div><dt>Network Status</dt><dd>Sepolia Testnet ✓</dd></div>
             <div><dt>Decimals Config</dt><dd className="mono">{wrapDec === null ? "…" : `${wrapDec} (Wrapper) / ${PAIR.decimals} (Underlying)`}</dd></div>
             <div><dt>Encrypted Handle</dt><dd className="mono handle">{handle ? `${handle.slice(0, 16)}…` : "…"}</dd></div>
