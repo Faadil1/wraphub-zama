@@ -71,3 +71,9 @@
   border: 1px solid #ECEAE4; border-radius: 6px; background: #fff; color: #5c5850; cursor: pointer;
 }
 .tab[aria-selected="true"] { background: #14120F; color: #FAF9F6; border-color: #14120F; }
+
+.open-actions {
+  margin-left: 8px; font-size: 12px; font-weight: 700; padding: 3px 10px;
+  background: #FFD208; color: #14120F; border: 1px solid #e6bd00; border-radius: 6px; cursor: pointer;
+}
+.open-actions:hover, .open-actions:focus-visible { background: #ffdf47; }

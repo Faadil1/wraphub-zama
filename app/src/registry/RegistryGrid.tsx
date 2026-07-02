@@ -24,7 +24,7 @@ function AddrRow({ label, addr }: { label: string; addr: string }) {
   );
 }
 
-function PairCard({ p, startHere }: { p: OfficialPair; startHere: boolean }) {
+function PairCard({ p, startHere, onOpen }: { p: OfficialPair; startHere: boolean; onOpen?: () => void }) {
   return (
     <article className={"pair-card" + (startHere ? " start-here" : "")} aria-label={`${p.symbol} wrapper pair`}>
       {startHere && <div className="start-flag">Start here</div>}
@@ -45,12 +45,15 @@ function PairCard({ p, startHere }: { p: OfficialPair; startHere: boolean }) {
         ) : (
           <span className="badge badge-nofaucet">No faucet (non-mock)</span>
         )}
+        {onOpen && (
+          <button className="open-actions" onClick={onOpen}>Open actions →</button>
+        )}
       </footer>
     </article>
   );
 }
 
-export default function RegistryGrid() {
+export default function RegistryGrid({ onOpenUsdc }: { onOpenUsdc?: () => void }) {
   return (
     <section className="registry">
       <header className="registry-head">
@@ -65,7 +68,7 @@ export default function RegistryGrid() {
       </header>
       <div className="pair-grid">
         {OFFICIAL_PAIRS.map((p) => (
-          <PairCard key={p.wrapper} p={p} startHere={p.symbol === "USDCMock"} />
+          <PairCard key={p.wrapper} p={p} startHere={p.symbol === "USDCMock"} onOpen={p.symbol === "USDCMock" ? onOpenUsdc : undefined} />
         ))}
       </div>
     </section>
