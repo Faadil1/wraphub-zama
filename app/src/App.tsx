@@ -13,17 +13,18 @@ export default function App() {
   return (
     <div className="app-shell">
       <header className="app-top">
-        <div>
-          <h1 className="app-title">WrapHub <span className="pulse">/ registry with a pulse</span></h1>
-          <p className="app-tag">The composability entry point for Zama confidential tokens.</p>
+        <div className="app-logo">
+          <h1 className="app-title">WrapHub <span className="pulse">• Registry with a Pulse</span></h1>
         </div>
         <nav className="app-tabs" role="tablist" aria-label="Views">
-          <button className="tab" role="tab" aria-selected={tab === "registry"} onClick={() => setTab("registry")}>Registry</button>
-          <button className="tab" role="tab" aria-selected={tab === "decrypt"} onClick={() => setTab("decrypt")}>Decrypt any token</button>
-          <button className="tab" role="tab" aria-selected={tab === "probe"} onClick={() => setTab("probe")}>S5 probe</button>
+          <button className="tab" role="tab" aria-selected={tab === "registry"} onClick={() => setTab("registry")}>Registry Grid</button>
+          <button className="tab" role="tab" aria-selected={tab === "decrypt"} onClick={() => setTab("decrypt")}>Arbitrary Decrypt</button>
+          <button className="tab" role="tab" aria-selected={tab === "probe"} onClick={() => setTab("probe")}>S5 Browser Probe</button>
         </nav>
       </header>
-      {tab === "registry" ? <RegistryGrid onOpenPair={setDrawerPair} /> : tab === "decrypt" ? <ArbitraryDecrypt /> : <Probe />}
+      <main className="app-main">
+        {tab === "registry" ? <RegistryGrid onOpenPair={setDrawerPair} /> : tab === "decrypt" ? <ArbitraryDecrypt /> : <Probe />}
+      </main>
       {drawerPair && <PairDrawer key={drawerPair.wrapper} pair={drawerPair} onClose={() => setDrawerPair(null)} />}
     </div>
   );

@@ -42,8 +42,8 @@ function PairCard({ p, startHere, onOpen }: { p: SourcedPair; startHere: boolean
       </header>
       <p className="pair-name">{p.name} · {p.decimals} decimals</p>
       <div className="pair-addrs">
-        <AddrRow label="ERC-20" addr={p.erc20} />
-        <AddrRow label="ERC-7984" addr={p.wrapper} />
+        <AddrRow label="ERC-20 (Public)" addr={p.erc20} />
+        <AddrRow label="ERC-7984 (Confidential)" addr={p.wrapper} />
       </div>
       <footer className="pair-foot">
         {p.faucet ? (
@@ -64,8 +64,35 @@ export default function RegistryGrid({ onOpenPair }: { onOpenPair?: (p: Official
   useEffect(() => { loadRegistry().then(setLoad); }, []);
   return (
     <section className="registry">
+      <div className="hero-banner">
+        <h2 className="hero-tagline">The composability entry point for Zama confidential tokens.</h2>
+        <p className="hero-core-msg">Deploying your own wrapper is completely unnecessary.</p>
+        <p className="hero-desc">
+          Browse official Zama Sepolia wrappers, claim mock tokens, wrap into ERC-7984, and decrypt your own confidential balance.
+        </p>
+
+        <div className="proof-badges">
+          <div className="proof-badge" title="8 official verified wrapper pairs in this registry">
+            <span className="badge-icon">✓</span>
+            <span className="badge-lbl">8 Official Pairs</span>
+          </div>
+          <div className="proof-badge" title="Registry validated directly on the Sepolia testnet">
+            <span className="badge-icon">🟢</span>
+            <span className="badge-lbl">Live Onchain Validation</span>
+          </div>
+          <div className="proof-badge" title="Decryption is performed using secure EIP-712 permit signatures">
+            <span className="badge-icon">🔑</span>
+            <span className="badge-lbl">EIP-712 Decrypt</span>
+          </div>
+          <div className="proof-badge" title="7 faucet-enabled mock tokens available to mint">
+            <span className="badge-icon">🎁</span>
+            <span className="badge-lbl">7 Faucet Mocks</span>
+          </div>
+        </div>
+      </div>
+
       <header className="registry-head">
-        <h2>Official Sepolia wrapper pairs</h2>
+        <h2 className="registry-title">Official Sepolia Wrapper Pairs</h2>
         <p className="registry-sub">
           Primary source: onchain Wrappers Registry{" "}
           <a className="addr" href={scan(SEPOLIA_REGISTRY)} target="_blank" rel="noreferrer">
@@ -80,6 +107,7 @@ export default function RegistryGrid({ onOpenPair }: { onOpenPair?: (p: Official
           </p>
         )}
       </header>
+
       <div className="pair-grid">
         {(load?.pairs ?? []).map((p) => (
           <PairCard key={p.wrapper} p={p} startHere={p.symbol === "USDCMock"} onOpen={p.faucet && onOpenPair ? () => onOpenPair(p) : undefined} />

@@ -53,7 +53,10 @@ export default function ArbitraryDecrypt() {
       try { out.erc7984 = await token.isConfidential(); } catch { out.erc7984 = null; }
       if (out.erc7984 === false) {
         setRes({ ...out });
-        setErr({ kind: "NOT_ERC7984", message: "This contract does not report the ERC-7984 interface via ERC-165. Decryption not attempted." });
+        setErr({ 
+          kind: "NOT_ERC7984", 
+          message: "Unsupported Token Standard: This contract does not support the ERC-7984 confidential token standard via ERC-165. Standard ERC-20 tokens (like USDC or WETH) do not support user-side decryption or native encryption. Please use one of our registered wrapper tokens or another valid ERC-7984 wrapper instead." 
+        });
         setBusy(null);
         return;
       }
@@ -98,25 +101,24 @@ export default function ArbitraryDecrypt() {
       <header>
         <h2 className="arb-title">Decrypt any ERC-7984 balance</h2>
         <p className="arb-sub">
-          Paste any ERC-7984 token address on Sepolia — registered in the Wrappers Registry or not —
-          and decrypt your own confidential balance via the EIP-712 user-decryption flow. Read-only.
+          Paste any Sepolia contract address to check if it supports the ERC-7984 confidential token standard and decrypt your own balance via the secure EIP-712 decryption flow. (Read-only)
         </p>
       </header>
 
       <div className="arb-input-row">
         <input
           className="arb-input mono"
-          placeholder="0x… ERC-7984 token address"
+          placeholder="Paste Sepolia ERC-7984 contract address (0x…)"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           aria-label="ERC-7984 token address"
         />
         <button className="run" onClick={() => run(input)} disabled={!!busy}>
-          {busy ? "Working…" : "Decrypt my balance"}
+          {busy ? "Decrypting…" : "Decrypt my balance"}
         </button>
       </div>
       <div className="arb-examples">
-        Try:
+        Try Registered Wrappers:
         {EXAMPLES.map((x) => (
           <button key={x.addr} className="example" onClick={() => { setInput(x.addr); run(x.addr); }} disabled={!!busy}>
             {x.label}
@@ -129,14 +131,14 @@ export default function ArbitraryDecrypt() {
 
       {res && (
         <dl className="facts arb-facts">
-          <div><dt>Token</dt><dd className="mono">{res.address}</dd></div>
-          <div><dt>ERC-7984 (ERC-165)</dt>
-            <dd>{res.erc7984 === true ? "supported ✓" : res.erc7984 === false ? "not supported" : "check unavailable — attempted anyway"}</dd></div>
+          <div><dt>Token Contract</dt><dd className="mono">{res.address}</dd></div>
+          <div><dt>ERC-7984 Support</dt>
+            <dd>{res.erc7984 === true ? "Supported ✓" : res.erc7984 === false ? "Unsupported ✕" : "Check unavailable — attempted anyway"}</dd></div>
           <div><dt>Metadata</dt><dd>{res.meta.symbol} · {res.meta.name} · decimals {res.meta.decimals ?? "?"}</dd></div>
-          <div><dt>Encrypted handle</dt><dd className="mono handle">{res.handle ?? "…"}</dd></div>
-          <div><dt>Permit</dt><dd>{res.permit === null ? "…" : res.permit ? "granted" : "not granted"}</dd></div>
-          <div><dt>Decrypted balance</dt>
-            <dd className="mono">{res.plaintext === null ? "…" : `${fmt(res.plaintext, res.meta.decimals)} ${res.meta.symbol} (wrapper units)`}</dd></div>
+          <div><dt>Encrypted Handle</dt><dd className="mono handle">{res.handle ?? "…"}</dd></div>
+          <div><dt>EIP-712 Permit</dt><dd>{res.permit === null ? "…" : res.permit ? "Granted ✓" : "Not Granted"}</dd></div>
+          <div><dt>Decrypted Balance</dt>
+            <dd className="mono font-bold">{res.plaintext === null ? "…" : `${fmt(res.plaintext, res.meta.decimals)} ${res.meta.symbol}`}</dd></div>
         </dl>
       )}
     </section>

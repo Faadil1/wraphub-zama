@@ -1,19 +1,116 @@
-/* Arbitrary ERC-7984 decrypt — Step 6. Same token system. No animations. */
-.arb { max-width: 720px; margin: 0 auto; padding: 24px 20px 64px; color: #14120F; }
-.arb-title { font-size: 20px; font-weight: 800; margin: 0 0 4px; }
-.arb-sub { font-size: 13px; color: #5c5850; margin: 0 0 16px; max-width: 560px; }
-.arb-input-row { display: flex; gap: 8px; }
+/* Arbitrary ERC-7984 decrypt.
+   Theme-aware using CSS variables. */
+.arb {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 32px 20px 64px;
+  color: var(--text-primary);
+  text-align: left;
+}
+
+.arb-title {
+  font-family: var(--heading);
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin-bottom: 6px;
+}
+
+.arb-sub {
+  font-size: 13.5px;
+  color: var(--text-secondary);
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
+
+.arb-input-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
 .arb-input {
-  flex: 1; font-size: 13px; padding: 8px 10px;
-  border: 1px solid #ECEAE4; border-radius: 6px; background: #FAF9F6;
+  flex: 1;
+  font-family: var(--mono);
+  font-size: 13px;
+  padding: 10px 14px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s ease;
 }
-.arb-input:focus-visible { outline: 2px solid #14120F; outline-offset: 1px; }
-.arb-examples { margin: 10px 0 0; font-size: 12px; color: #5c5850; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+
+.arb-input:focus-visible {
+  outline: 2px solid var(--text-primary);
+  outline-offset: 1px;
+  background: var(--bg-primary);
+}
+
+.arb-examples {
+  margin: 12px 0 0;
+  font-size: 12.5px;
+  color: var(--text-secondary);
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
 .example {
-  font-size: 12px; padding: 3px 10px; border: 1px solid #ECEAE4; border-radius: 999px;
-  background: #fff; color: #14120F; cursor: pointer;
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 999px;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow-sm);
 }
-.example:hover, .example:focus-visible { border-color: #14120F; }
-.arb-busy { font-size: 13px; color: #6a5a00; background: #fff7d1; border: 1px solid #f0e29a; border-radius: 6px; padding: 6px 10px; display: inline-block; }
-.arb-facts { margin-top: 16px; border-top: 1px solid #ECEAE4; padding-top: 12px; }
-.arb-facts dt { width: 150px; }
+
+.example:hover, .example:focus-visible {
+  border-color: var(--text-primary);
+  transform: translateY(-1px);
+}
+
+.arb-busy {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--warning-color);
+  background: var(--warning-bg);
+  border: 1px solid var(--warning-border);
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-top: 16px;
+  display: inline-block;
+}
+
+.arb-facts {
+  margin-top: 24px;
+  border-top: 1px solid var(--border-color);
+  padding-top: 20px;
+}
+
+.arb-facts dt {
+  width: 160px;
+}
+
+/* Mobile styles */
+@media (max-width: 600px) {
+  .arb-input-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+  .arb-input {
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .arb-facts dt {
+    width: 120px;
+  }
+}

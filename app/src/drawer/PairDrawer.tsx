@@ -19,10 +19,10 @@ const idle = (): ActionState => ({ phase: "idle", txs: [] });
 
 function Tx({ t }: { t: { label: string; hash: string } }) {
   return (
-    <div className="tx-row">
-      <span className="tx-label">{t.label}</span>
-      <a className="addr" href={scanTx(t.hash)} target="_blank" rel="noreferrer" title={t.hash}>
-        {t.hash.slice(0, 10)}…{t.hash.slice(-6)}
+    <div className="tx-row-badge">
+      <span className="tx-label-badge">{t.label}</span>
+      <a className="tx-link-badge" href={scanTx(t.hash)} target="_blank" rel="noreferrer" title={`View ${t.label} tx on Etherscan`}>
+        {t.hash.slice(0, 8)}…{t.hash.slice(-6)} ↗
       </a>
     </div>
   );
@@ -158,9 +158,9 @@ export default function PairDrawer({ pair, onClose }: { pair: OfficialPair; onCl
       <header className="drawer-head">
         <div>
           <h3 className="drawer-title">{PAIR.symbol} → c{PAIR.symbol}</h3>
-          <p className="drawer-sub">Judge path: Mint → Shield → Decrypt → Unshield</p>
+          <p className="drawer-sub">Interactive Control Console</p>
         </div>
-        <button className="tab" onClick={onClose}>Close</button>
+        <button className="close-btn" onClick={onClose} aria-label="Close action drawer">Close</button>
       </header>
 
       {connErr ? (
@@ -169,21 +169,38 @@ export default function PairDrawer({ pair, onClose }: { pair: OfficialPair; onCl
         <div className="drawer-note">Connecting wallet…</div>
       ) : (
         <>
+          <div className="balance-comparison">
+            <div className="balance-box public">
+              <span className="bal-lbl">Public Balance (ERC-20)</span>
+              <span className="bal-val">{publicBal === null ? "…" : `${fmt(publicBal)} ${PAIR.symbol}`}</span>
+            </div>
+            <div className="balance-box confidential">
+              <span className="bal-lbl">Confidential Balance (ERC-7984)</span>
+              <span className="bal-val">
+                {plaintext === null ? (
+                  <span className="bal-placeholder">🔒 Encrypted (Run Step 3)</span>
+                ) : (
+                  `🔓 ${wfmt(BigInt(plaintext))} c${PAIR.symbol}`
+                )}
+              </span>
+            </div>
+          </div>
+
           <dl className="facts">
-            <div><dt>Wallet</dt><dd className="mono">{session.address}</dd></div>
-            <div><dt>Network</dt><dd>Sepolia ✓</dd></div>
-            <div><dt>Public {PAIR.symbol}</dt><dd className="mono">{publicBal === null ? "…" : fmt(publicBal)}</dd></div>
-            <div><dt>Wrapper decimals</dt><dd className="mono">{wrapDec === null ? "…" : `${wrapDec} (underlying: ${PAIR.decimals})`}</dd></div>
-            <div><dt>Encrypted handle</dt><dd className="mono handle">{handle ?? "…"}</dd></div>
-            <div><dt>Permit</dt><dd>{hasPermit === null ? "…" : hasPermit ? "granted" : "not granted"}</dd></div>
-            <div><dt>Decrypted balance</dt><dd className="mono">{plaintext === null ? "— (run Decrypt)" : `${wfmt(BigInt(plaintext))} c${PAIR.symbol}`}</dd></div>
+            <div><dt>Connected Wallet</dt><dd className="mono">{session.address}</dd></div>
+            <div><dt>Network Status</dt><dd>Sepolia Testnet ✓</dd></div>
+            <div><dt>Decimals Config</dt><dd className="mono">{wrapDec === null ? "…" : `${wrapDec} (Wrapper) / ${PAIR.decimals} (Underlying)`}</dd></div>
+            <div><dt>Encrypted Handle</dt><dd className="mono handle">{handle ? `${handle.slice(0, 16)}…` : "…"}</dd></div>
+            <div><dt>EIP-712 Permit</dt><dd>{hasPermit === null ? "…" : hasPermit ? "Granted ✓" : "Not Granted"}</dd></div>
           </dl>
 
+          <div className="action-sequence-title">Sequential Test Flow (Steps 1 → 4)</div>
+
           {([
-            ["1 · Mint (faucet)", `Mint ${fmt(MINT_AMOUNT)} ${PAIR.symbol} via mint()`, mint, doMint],
-            ["2 · Shield", `Wrap ${fmt(SHIELD_AMOUNT)} ${PAIR.symbol} → encrypted c${PAIR.symbol}`, shield, doShield],
-            ["3 · Decrypt", "EIP-712 permit, then decrypt your own confidential balance", decrypt, doDecrypt],
-            ["4 · Unshield", `Unwrap 1 display token back — two onchain phases (unwrap, finalize)`, unshield, doUnshield],
+            ["Step 1: Mint Public Mocks", `Faucet: Claim ${fmt(MINT_AMOUNT)} public mock ${PAIR.symbol} tokens.`, mint, doMint],
+            ["Step 2: Shield into Wrapper", `Wrap: Shield ${fmt(SHIELD_AMOUNT)} ${PAIR.symbol} into encrypted, confidential c${PAIR.symbol}.`, shield, doShield],
+            ["Step 3: Decrypt own Balance", "Decrypt: Request secure EIP-712 permit and decrypt your confidential wrapper balance.", decrypt, doDecrypt],
+            ["Step 4: Unshield to Public", `Unwrap: Unshield 1 display token of c${PAIR.symbol} back to public ERC-20 (unwrap & finalize phases).`, unshield, doUnshield],
           ] as const).map(([title, desc, st, run]) => (
             <section className="action" key={title}>
               <div className="action-head">
@@ -191,10 +208,14 @@ export default function PairDrawer({ pair, onClose }: { pair: OfficialPair; onCl
                 <PhasePill phase={st.phase} />
               </div>
               <p className="action-desc">{desc}</p>
-              {st.txs.map((t) => <Tx key={t.hash} t={t} />)}
+              {st.txs.length > 0 && (
+                <div className="tx-list">
+                  {st.txs.map((t) => <Tx key={t.hash} t={t} />)}
+                </div>
+              )}
               {st.note && <p className={st.phase === "error" ? "err-box" : "ok-note"}>{st.note}</p>}
               <button className="run" onClick={run} disabled={st.phase === "pending" || st.phase === "finalizing"}>
-                {st.phase === "done" ? "Run again" : "Run"}
+                {st.phase === "done" ? "Run again" : "Run Action"}
               </button>
             </section>
           ))}
