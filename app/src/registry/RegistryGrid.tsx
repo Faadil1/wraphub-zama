@@ -1,5 +1,5 @@
-// Registry grid — Step 3. Read-only coverage surface: every official Sepolia
-// pair as a card. No drawer, no actions, no animations (later steps).
+// Registry grid — official Sepolia coverage surface.
+// Faucet mocks and non-mock official pairs can open the drawer; local dev pairs stay read-only.
 import { useEffect, useState } from "react";
 import { SEPOLIA_REGISTRY, type OfficialPair } from "./pairs.official";
 import { loadRegistry, type RegistryLoad, type SourcedPair } from "./source";
@@ -52,7 +52,10 @@ function PairCard({ p, startHere, onOpen }: { p: SourcedPair; startHere: boolean
             {onOpen && <button className="open-actions" onClick={onOpen}>Open actions →</button>}
           </>
         ) : (
-          <span className="badge badge-nofaucet">No faucet / read-only (non-mock)</span>
+          <>
+            <span className="badge badge-nofaucet">No faucet / existing balance required</span>
+            {onOpen && <button className="open-actions" onClick={onOpen}>Open actions →</button>}
+          </>
         )}
       </footer>
     </article>
@@ -110,7 +113,7 @@ export default function RegistryGrid({ onOpenPair }: { onOpenPair?: (p: Official
 
       <div className="pair-grid">
         {(load?.pairs ?? []).map((p) => (
-          <PairCard key={p.wrapper} p={p} startHere={p.symbol === "USDCMock"} onOpen={p.faucet && onOpenPair ? () => onOpenPair(p) : undefined} />
+          <PairCard key={p.wrapper} p={p} startHere={p.symbol === "USDCMock"} onOpen={p.source !== "local" && onOpenPair ? () => onOpenPair(p as OfficialPair) : undefined} />
         ))}
       </div>
     </section>

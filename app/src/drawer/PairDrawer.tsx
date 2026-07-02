@@ -1,5 +1,7 @@
 // Pair action drawer — Step 5 generalization of the live-tested Step 4 flow.
-// Judge path per faucet-eligible mock pair: Mint → Shield → Decrypt → Unshield.
+// Judge path:
+ // - faucet mocks: Mint → Shield → Decrypt → Unshield
+ // - non-mock official pairs: Shield existing balance → Decrypt → Unshield.
 // Call sequences are S3/S4/S5 canon — do not alter. No animations.
 import { useCallback, useEffect, useState } from "react";
 import { ethers } from "ethers";
@@ -15,6 +17,7 @@ const scanTx = (h: string) => `https://sepolia.etherscan.io/tx/${h}`;
 
 type Phase = "idle" | "pending" | "finalizing" | "done" | "error";
 type ActionState = { phase: Phase; txs: { label: string; hash: string }[]; note?: string };
+type DrawerAction = readonly [title: string, desc: string, state: ActionState, run: () => void | Promise<void>];
 const idle = (): ActionState => ({ phase: "idle", txs: [] });
 
 function shortAddr(addr: string) {
@@ -157,6 +160,17 @@ export default function PairDrawer({ pair, onClose }: { pair: OfficialPair; onCl
     await refresh(session!);
   }, setUnshield);
 
+  const actions: DrawerAction[] = PAIR.faucet ? [
+    ["Step 1: Mint Public Mocks", `Faucet: Claim ${fmt(MINT_AMOUNT)} public mock ${PAIR.symbol} tokens.`, mint, doMint],
+    ["Step 2: Shield into Wrapper", `Wrap: Shield ${fmt(SHIELD_AMOUNT)} ${PAIR.symbol} into encrypted, confidential c${PAIR.symbol}.`, shield, doShield],
+    ["Step 3: Decrypt own Balance", "Decrypt: Request secure EIP-712 permit and decrypt your confidential wrapper balance.", decrypt, doDecrypt],
+    ["Step 4: Unshield to Public", `Unwrap: Unshield 1 display token of c${PAIR.symbol} back to public ERC-20 (unwrap & finalize phases).`, unshield, doUnshield],
+  ] : [
+    ["Step 1: Shield Existing Balance", `No faucet: shield ${fmt(SHIELD_AMOUNT)} existing ${PAIR.symbol} into encrypted, confidential c${PAIR.symbol}.`, shield, doShield],
+    ["Step 2: Decrypt own Balance", "Decrypt: Request secure EIP-712 permit and decrypt your confidential wrapper balance.", decrypt, doDecrypt],
+    ["Step 3: Unshield to Public", `Unwrap: Unshield 1 display token of c${PAIR.symbol} back to public ERC-20 (unwrap & finalize phases).`, unshield, doUnshield],
+  ];
+
   return (
     <aside className="drawer" role="dialog" aria-label={`${PAIR.symbol} actions`}>
       <header className="drawer-head">
@@ -198,14 +212,17 @@ export default function PairDrawer({ pair, onClose }: { pair: OfficialPair; onCl
             <div><dt>EIP-712 Permit</dt><dd>{hasPermit === null ? "…" : hasPermit ? "Granted ✓" : "Not Granted"}</dd></div>
           </dl>
 
-          <div className="action-sequence-title">Sequential Test Flow (Steps 1 → 4)</div>
+          {!PAIR.faucet && (
+            <div className="drawer-note">
+              No faucet is available for this official non-mock pair. Shield and unshield require an existing public {PAIR.symbol} balance.
+            </div>
+          )}
 
-          {([
-            ["Step 1: Mint Public Mocks", `Faucet: Claim ${fmt(MINT_AMOUNT)} public mock ${PAIR.symbol} tokens.`, mint, doMint],
-            ["Step 2: Shield into Wrapper", `Wrap: Shield ${fmt(SHIELD_AMOUNT)} ${PAIR.symbol} into encrypted, confidential c${PAIR.symbol}.`, shield, doShield],
-            ["Step 3: Decrypt own Balance", "Decrypt: Request secure EIP-712 permit and decrypt your confidential wrapper balance.", decrypt, doDecrypt],
-            ["Step 4: Unshield to Public", `Unwrap: Unshield 1 display token of c${PAIR.symbol} back to public ERC-20 (unwrap & finalize phases).`, unshield, doUnshield],
-          ] as const).map(([title, desc, st, run]) => (
+          <div className="action-sequence-title">
+            {PAIR.faucet ? "Sequential Test Flow (Steps 1 → 4)" : "Non-mock Flow (existing balance required)"}
+          </div>
+
+          {actions.map(([title, desc, st, run]) => (
             <section className="action" key={title}>
               <div className="action-head">
                 <h4>{title}</h4>
