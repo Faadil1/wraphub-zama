@@ -77,3 +77,9 @@
   background: #FFD208; color: #14120F; border: 1px solid #e6bd00; border-radius: 6px; cursor: pointer;
 }
 .open-actions:hover, .open-actions:focus-visible { background: #ffdf47; }
+
+.source-note { font-size: 12.5px; margin: 0 0 16px; padding: 5px 10px; border-radius: 6px; display: inline-block; }
+.source-loading { background: #f1efe9; color: #5c5850; }
+.source-live { background: #e7f2ec; color: #2E7D5B; border: 1px solid #cfe6da; }
+.source-snapshot { background: #fff7d1; color: #6a5a00; border: 1px solid #f0e29a; }
+.badge-local { background: #eef; color: #33418f; border: 1px solid #ccd3f0; }

@@ -1,0 +1,4 @@
+{
+  "$comment": "Local dev-only pairs. These are NEVER shown as official-registry-valid. See docs/ADD-NEW-PAIR.md. Example entry below is commented out by an invalid address on purpose — replace with real addresses to activate.",
+  "pairs": []
+}

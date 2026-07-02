@@ -40,3 +40,6 @@ S5 browser dApp viability gate:
 - Browser ZamaSDK config
 - USDCMock confidential balance decrypt proof in browser
 
+
+## Registry sourcing (hybrid model)
+(see docs/ADD-NEW-PAIR.md)
