@@ -2,7 +2,11 @@
 // Priority: (1) LIVE onchain Wrappers Registry read (primary source of truth),
 // (2) S1 snapshot fallback if the live read fails, plus (3) local dev-only pairs
 // from pairs.local.json, always labeled, never presented as official.
-// Live read uses the spike-verified ABI (S1) over a public Sepolia RPC — no wallet needed.
+//
+// Important: do not request an oversized slice. The S1 spike proved that
+// getTokenPairsSlice(0,50) can revert when the requested range exceeds the
+// current registry length. This loader first tries the live length, then falls
+// back to the known S1 official count of 8 for a bounded live read.
 import { ethers } from "ethers";
 import { OFFICIAL_PAIRS, SEPOLIA_REGISTRY, type OfficialPair } from "./pairs.official";
 import localConfig from "./pairs.local.json";
@@ -14,23 +18,31 @@ export type RegistryLoad = {
   status: "live" | "snapshot";
   officialCount: number;
   localCount: number;
-  note: string; // human-readable source status for the UI
+  note: string;
 };
 
 const RPC = "https://ethereum-sepolia-rpc.publicnode.com";
-// ABI verified character-by-character against docs in spike S1 — do not alter.
+const S1_OFFICIAL_COUNT = OFFICIAL_PAIRS.length;
+
 const REGISTRY_ABI = [
+  "function getTokenPairsLength() view returns (uint256)",
   "function getTokenPairsSlice(uint256 fromIndex, uint256 toIndex) view returns (tuple(address tokenAddress, address confidentialTokenAddress, bool isValid)[])",
 ];
+
 const ERC20_META_ABI = [
   "function symbol() view returns (string)",
   "function name() view returns (string)",
   "function decimals() view returns (uint8)",
 ];
+
 const LIVE_TIMEOUT_MS = 8000;
 
 type LocalPair = {
-  symbol: string; name: string; erc20: string; wrapper: string; decimals: number;
+  symbol: string;
+  name: string;
+  erc20: string;
+  wrapper: string;
+  decimals: number;
 };
 
 function localPairs(): SourcedPair[] {
@@ -38,12 +50,14 @@ function localPairs(): SourcedPair[] {
   return list
     .filter((p) => /^0x[0-9a-fA-F]{40}$/.test(p.erc20) && /^0x[0-9a-fA-F]{40}$/.test(p.wrapper))
     .map((p, i) => ({
-      index: 1000 + i, // never collides with official indices
-      symbol: p.symbol, name: p.name,
-      erc20: p.erc20 as `0x${string}`, wrapper: p.wrapper as `0x${string}`,
+      index: 1000 + i,
+      symbol: p.symbol,
+      name: p.name,
+      erc20: p.erc20 as `0x${string}`,
+      wrapper: p.wrapper as `0x${string}`,
       decimals: p.decimals,
-      isValid: false,   // local pairs are NOT official-registry-valid by definition
-      faucet: false,    // read-only: no drawer actions for local pairs
+      isValid: false,
+      faucet: false,
       source: "local" as const,
     }));
 }
@@ -51,31 +65,73 @@ function localPairs(): SourcedPair[] {
 async function withTimeout<T>(p: Promise<T>, ms: number): Promise<T> {
   return await Promise.race([
     p,
-    new Promise<never>((_, rej) => setTimeout(() => rej(new Error(`live registry read timed out after ${ms}ms`)), ms)),
+    new Promise<never>((_, rej) =>
+      setTimeout(() => rej(new Error(`live registry read timed out after ${ms}ms`)), ms)
+    ),
   ]);
 }
 
 /** Known faucet eligibility from S2 evidence, keyed by wrapper address. */
 const FAUCET_BY_WRAPPER = new Map(OFFICIAL_PAIRS.map((p) => [p.wrapper.toLowerCase(), p.faucet]));
 
+async function readPairSlice(
+  reg: ethers.Contract,
+  from: bigint,
+  to: bigint
+): Promise<{ tokenAddress: string; confidentialTokenAddress: string; isValid: boolean }[]> {
+  return await withTimeout(reg.getTokenPairsSlice(from, to), LIVE_TIMEOUT_MS);
+}
+
+async function readLiveSlice(reg: ethers.Contract): Promise<{ tokenAddress: string; confidentialTokenAddress: string; isValid: boolean }[]> {
+  try {
+    const rawCount = await withTimeout(reg.getTokenPairsLength(), LIVE_TIMEOUT_MS);
+    const count = Number(rawCount);
+
+    if (!Number.isFinite(count) || count <= 0) {
+      throw new Error(`invalid live registry length: ${String(rawCount)}`);
+    }
+
+    return await readPairSlice(reg, 0n, BigInt(count));
+  } catch (e) {
+    // Some SDK/contract surfaces have historically exposed length awkwardly.
+    // The S1 snapshot proved exactly 8 official pairs; use that as the bounded
+    // live retry before falling back to snapshot.
+    const bounded = await readPairSlice(reg, 0n, BigInt(S1_OFFICIAL_COUNT));
+    if (bounded.length === 0) {
+      const why = e instanceof Error ? e.message : String(e);
+      throw new Error(`live length read failed (${why}) and bounded live read returned 0 pairs`);
+    }
+    return bounded;
+  }
+}
+
 async function readLive(): Promise<SourcedPair[]> {
   const provider = new ethers.JsonRpcProvider(RPC, undefined, { staticNetwork: true });
   const reg = new ethers.Contract(SEPOLIA_REGISTRY, REGISTRY_ABI, provider);
-  const slice: { tokenAddress: string; confidentialTokenAddress: string; isValid: boolean }[] =
-    await withTimeout(reg.getTokenPairsSlice(0n, 50n), LIVE_TIMEOUT_MS);
+
+  const slice = await readLiveSlice(reg);
+
   const pairs: SourcedPair[] = [];
   for (let i = 0; i < slice.length; i++) {
     const row = slice[i];
-    let symbol = "?", name = "?", decimals = 18;
+    let symbol = "?";
+    let name = "?";
+    let decimals = 18;
+
     try {
       const erc20 = new ethers.Contract(row.tokenAddress, ERC20_META_ABI, provider);
       [symbol, name, decimals] = await withTimeout(
         Promise.all([erc20.symbol(), erc20.name(), erc20.decimals().then(Number)]),
         LIVE_TIMEOUT_MS
       );
-    } catch { /* metadata optional; keep placeholders */ }
+    } catch {
+      // metadata optional; keep placeholders
+    }
+
     pairs.push({
-      index: i, symbol, name,
+      index: i,
+      symbol,
+      name,
       erc20: row.tokenAddress as `0x${string}`,
       wrapper: row.confidentialTokenAddress as `0x${string}`,
       decimals: Number(decimals),
@@ -84,12 +140,14 @@ async function readLive(): Promise<SourcedPair[]> {
       source: "live",
     });
   }
+
   if (pairs.length === 0) throw new Error("live registry read returned 0 pairs");
   return pairs;
 }
 
 export async function loadRegistry(): Promise<RegistryLoad> {
   const locals = localPairs();
+
   try {
     const live = await readLive();
     return {
