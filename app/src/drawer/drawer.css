@@ -305,6 +305,53 @@
   font-weight: 500;
 }
 
+
+/* EIP-712 plain-language note, shown alongside the Decrypt action */
+.eip712-plain-note {
+  font-size: 11.5px;
+  line-height: 1.4;
+  color: var(--text-secondary);
+  font-style: italic;
+  margin: 0;
+}
+
+/* Judge Moment card — appears only after decrypt.phase === "done" && plaintext !== null */
+.judge-moment-card {
+  background: linear-gradient(180deg, var(--bg-primary) 0%, rgba(255, 210, 8, 0.04) 100%);
+  border: 2px solid var(--accent-color);
+  border-radius: 12px;
+  padding: 18px 16px;
+  margin: 4px 0 16px;
+  box-shadow: var(--shadow-md), var(--shadow-glow);
+}
+
+.judge-moment-badge {
+  display: inline-block;
+  font-family: var(--heading);
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--accent-text);
+  background: var(--accent-color);
+  padding: 4px 12px;
+  border-radius: 999px;
+  margin-bottom: 10px;
+}
+
+.judge-moment-desc {
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--text-primary);
+  margin: 0 0 10px;
+}
+
+.judge-moment-value {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
 /* Mobile responsive drawer rules */
 @media (max-width: 768px) {
   .drawer {

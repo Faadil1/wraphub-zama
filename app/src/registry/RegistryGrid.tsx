@@ -58,6 +58,11 @@ function PairCard({ p, startHere, onOpen }: { p: SourcedPair; startHere: boolean
           </>
         )}
       </footer>
+      {!p.faucet && (
+        <p className="limitation-note">
+          <span className="badge evidence-limitation">LIMITATION</span> No faucet. Existing public balance required.
+        </p>
+      )}
     </article>
   );
 }
@@ -94,10 +99,65 @@ export default function RegistryGrid({ onOpenPair }: { onOpenPair?: (p: Official
         </div>
       </div>
 
+      {/* Judge path — narration only, no logic. Mirrors the real 3-step flow below. */}
+      <div className="judge-path">
+        <h2 className="judge-path-title">Judge path</h2>
+        <div className="judge-path-cards">
+          <article className="judge-path-card">
+            <span className="judge-path-step">1</span>
+            <h3 className="judge-path-card-title">Discover</h3>
+            <p className="judge-path-card-desc">
+              Browse 8 official Sepolia ERC-20 to ERC-7984 wrapper pairs, with validity re-verified onchain.
+            </p>
+          </article>
+          <article className="judge-path-card">
+            <span className="judge-path-step">2</span>
+            <h3 className="judge-path-card-title">Wrap</h3>
+            <p className="judge-path-card-desc">
+              Start with USDCMock or any faucet-enabled mock pair to mint, shield, and create a confidential ERC-7984 balance.
+            </p>
+          </article>
+          <article className="judge-path-card">
+            <span className="judge-path-step">3</span>
+            <h3 className="judge-path-card-title">Decrypt</h3>
+            <p className="judge-path-card-desc">
+              Sign an EIP-712 permit to decrypt only your own confidential balance in the browser.
+            </p>
+            <p className="judge-path-eip712-note">
+              This signature does not move funds. It grants this wallet permission to view its own confidential balance.
+            </p>
+          </article>
+        </div>
+      </div>
+
+      {/* Evidence strip — status labels are fixed vocabulary, do not rename. */}
+      <div className="evidence-strip">
+        <div className="evidence-item">
+          <span className="evidence-badge evidence-live">LIVE</span>
+          <span className="evidence-text">GitHub Pages dApp</span>
+        </div>
+        <div className="evidence-item">
+          <span className="evidence-badge evidence-live">LIVE</span>
+          <span className="evidence-text">8/8 official wrapper validity re-verified onchain</span>
+        </div>
+        <div className="evidence-item">
+          <span className="evidence-badge evidence-live">LIVE</span>
+          <span className="evidence-text">Mint / Shield / Decrypt / Unshield tested</span>
+        </div>
+        <div className="evidence-item">
+          <span className="evidence-badge evidence-live">LIVE</span>
+          <span className="evidence-text">EIP-712 self-decrypt in browser</span>
+        </div>
+        <div className="evidence-item">
+          <span className="evidence-badge evidence-limitation">LIMITATION</span>
+          <span className="evidence-text">non-mock tGBP requires existing public balance</span>
+        </div>
+      </div>
+
       <header className="registry-head">
         <h2 className="registry-title">Official Sepolia Wrapper Pairs</h2>
         <p className="registry-sub">
-          Primary source: onchain Wrappers Registry{" "}
+          8 official pairs · validity re-verified onchain ✓ · Primary source: onchain Wrappers Registry{" "}
           <a className="addr" href={scan(SEPOLIA_REGISTRY)} target="_blank" rel="noreferrer">
             {short(SEPOLIA_REGISTRY)}
           </a>

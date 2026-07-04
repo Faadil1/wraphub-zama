@@ -153,6 +153,118 @@
   font-size: 13px;
 }
 
+
+/* Judge path */
+.judge-path {
+  margin-bottom: 32px;
+}
+
+.judge-path-title {
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-secondary);
+  margin-bottom: 12px;
+}
+
+.judge-path-cards {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.judge-path-card {
+  position: relative;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 20px 16px 16px;
+  box-shadow: var(--shadow-sm);
+}
+
+.judge-path-step {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: var(--text-primary);
+  color: var(--bg-primary);
+  font-size: 11px;
+  font-weight: 800;
+  margin-bottom: 10px;
+}
+
+.judge-path-card-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+}
+
+.judge-path-card-desc {
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.judge-path-eip712-note {
+  margin: 10px 0 0;
+  padding-top: 10px;
+  border-top: 1px dashed var(--border-color);
+  font-size: 11.5px;
+  line-height: 1.4;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+/* Evidence strip */
+.evidence-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 32px;
+  padding: 16px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+}
+
+.evidence-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--text-primary);
+}
+
+.evidence-badge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  padding: 3px 8px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.evidence-live { background: var(--success-bg); color: var(--success-color); border: 1px solid var(--success-border); }
+.evidence-limitation { background: var(--warning-bg); color: var(--warning-color); border: 1px solid var(--warning-border); }
+
+/* Inline per-card limitation note */
+.limitation-note {
+  margin: 10px 0 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11.5px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
 /* Grid & Cards */
 .registry-head {
   margin-bottom: 24px;
@@ -401,5 +513,12 @@
   }
   .pair-grid {
     grid-template-columns: 1fr;
+  }
+  .judge-path-cards {
+    grid-template-columns: 1fr;
+  }
+  .evidence-strip {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }

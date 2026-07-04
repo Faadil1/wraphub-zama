@@ -229,6 +229,11 @@ export default function PairDrawer({ pair, onClose }: { pair: OfficialPair; onCl
                 <PhasePill phase={st.phase} />
               </div>
               <p className="action-desc">{desc}</p>
+              {title.includes("Decrypt") && (
+                <p className="eip712-plain-note">
+                  This signature does not move funds. It grants this wallet permission to view its own confidential balance.
+                </p>
+              )}
               {st.txs.length > 0 && (
                 <div className="tx-list">
                   {st.txs.map((t) => <Tx key={t.hash} t={t} />)}
@@ -240,6 +245,18 @@ export default function PairDrawer({ pair, onClose }: { pair: OfficialPair; onCl
               </button>
             </section>
           ))}
+
+          {decrypt.phase === "done" && plaintext !== null && (
+            <section className="judge-moment-card" aria-label="Judge moment: balance decrypted">
+              <div className="judge-moment-badge">BALANCE DECRYPTED</div>
+              <p className="judge-moment-desc">
+                Only this connected wallet could unlock the confidential balance. The ERC-7984 balance was encrypted onchain and decrypted client-side after an EIP-712 signature.
+              </p>
+              <div className="judge-moment-value">
+                Revealed balance: <span className="mono">{wfmt(BigInt(plaintext))} c{PAIR.symbol}</span>
+              </div>
+            </section>
+          )}
         </>
       )}
     </aside>
