@@ -74,7 +74,7 @@ export default function RegistryGrid({ onOpenPair }: { onOpenPair?: (p: Official
     <section className="registry">
       <div className="hero-banner">
         <h2 className="hero-tagline">The composability entry point for Zama confidential tokens.</h2>
-        <p className="hero-core-msg">Deploying your own wrapper is completely unnecessary.</p>
+        <p className="hero-core-msg">Start testing without deploying a custom wrapper.</p>
         <p className="hero-desc">
           Browse registry-validated Sepolia wrapper pairs, claim mock tokens, shield into ERC-7984, and self-decrypt your own confidential balance.
         </p>
@@ -82,7 +82,7 @@ export default function RegistryGrid({ onOpenPair }: { onOpenPair?: (p: Official
         <div className="proof-badges">
           <div className="proof-badge" title="8 official verified wrapper pairs in this registry">
             <span className="badge-icon">✓</span>
-            <span className="badge-lbl">8 Official Pairs</span>
+            <span className="badge-lbl">8 Validated Pairs</span>
           </div>
           <div className="proof-badge" title="Registry validated directly on the Sepolia testnet">
             <span className="badge-icon">🟢</span>
@@ -138,7 +138,7 @@ export default function RegistryGrid({ onOpenPair }: { onOpenPair?: (p: Official
         </div>
         <div className="evidence-item">
           <span className="evidence-badge evidence-live">LIVE</span>
-          <span className="evidence-text">8/8 official wrapper validity re-verified onchain</span>
+          <span className="evidence-text">8/8 wrapper pairs re-verified onchain</span>
         </div>
         <div className="evidence-item">
           <span className="evidence-badge evidence-live">LIVE</span>
@@ -155,9 +155,9 @@ export default function RegistryGrid({ onOpenPair }: { onOpenPair?: (p: Official
       </div>
 
       <header className="registry-head">
-        <h2 className="registry-title">Official Sepolia Wrapper Pairs</h2>
+        <h2 className="registry-title">Registry-Validated Sepolia Wrapper Pairs</h2>
         <p className="registry-sub">
-          8 official pairs · validity re-verified onchain ✓ · Primary source: onchain Wrappers Registry{" "}
+          8 registry-validated pairs · validity re-verified onchain ✓ · Primary source: onchain Wrappers Registry{" "}
           <a className="addr" href={scan(SEPOLIA_REGISTRY)} target="_blank" rel="noreferrer">
             {short(SEPOLIA_REGISTRY)}
           </a>

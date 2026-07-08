@@ -1,4 +1,4 @@
-// Official Sepolia wrapper pairs — derived VERBATIM from spike artifacts:
+// Registry-validated Sepolia wrapper pairs — derived VERBATIM from spike artifacts:
 // registry.json (S1 LIVE dump, 2026-07-02T01:15:47Z, registry 0x2f0750...128e)
 // s2-faucet-results.json (S2 LIVE mints, mint(address,uint256))
 // Evidence label: PRESEEDED snapshot of LIVE onchain data. Live onchain read

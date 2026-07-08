@@ -122,7 +122,7 @@ export async function loadRegistry(): Promise<RegistryLoad> {
       status: "snapshot",
       officialCount: snapshot.length,
       localCount: locals.length,
-      note: `Snapshot fallback — live registry validation unavailable (${why}). Showing S1 evidence snapshot (8 official pairs).`,
+      note: `Snapshot fallback — live registry validation unavailable (${why}). Showing S1 evidence snapshot (8 validated pairs).`,
     };
   }
 }

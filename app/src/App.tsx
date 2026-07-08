@@ -17,7 +17,7 @@ export default function App() {
         </div>
         <nav className="app-tabs" role="tablist" aria-label="Views">
           <button className="tab" role="tab" aria-selected={tab === "registry"} onClick={() => setTab("registry")}>Registry Grid</button>
-          <button className="tab" role="tab" aria-selected={tab === "decrypt"} onClick={() => setTab("decrypt")}>Arbitrary Decrypt</button>
+          <button className="tab" role="tab" aria-selected={tab === "decrypt"} onClick={() => setTab("decrypt")}>Self-Decrypt Utility</button>
         </nav>
       </header>
 
