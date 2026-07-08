@@ -76,7 +76,7 @@ export default function RegistryGrid({ onOpenPair }: { onOpenPair?: (p: Official
         <h2 className="hero-tagline">The composability entry point for Zama confidential tokens.</h2>
         <p className="hero-core-msg">Deploying your own wrapper is completely unnecessary.</p>
         <p className="hero-desc">
-          Browse official Zama Sepolia wrappers, claim mock tokens, wrap into ERC-7984, and decrypt your own confidential balance.
+          Browse registry-validated Sepolia wrapper pairs, claim mock tokens, shield into ERC-7984, and self-decrypt your own confidential balance.
         </p>
 
         <div className="proof-badges">

@@ -19,8 +19,16 @@ WrapHub provides one interface for:
 - wrapping public ERC-20 tokens into confidential ERC-7984 tokens;
 - decrypting a user's own confidential balance with EIP-712 user decryption;
 - unwrapping confidential balances back to public ERC-20 tokens;
-- testing arbitrary ERC-7984 balance decryption by pasted token address;
+- using an additional connected-wallet ERC-7984 self-decrypt utility for supported Sepolia token contexts;
 - extending the app with local development-only pairs.
+
+## Track Positioning
+
+**Builder Track**  
+WrapHub is the first-run console that helps builders understand their first confidential token: discover → verify → shield → self-decrypt → unshield.
+
+**Bounty Track**  
+WrapHub turns validated Zama Sepolia wrapper pairs into a usable verification and testing layer.
 
 ## Live app
 
@@ -39,7 +47,7 @@ WrapHub provides one interface for:
 | Wrap / shield ERC-20 into ERC-7984 | Implemented |
 | Unwrap / unshield ERC-7984 back to ERC-20 | Implemented |
 | EIP-712 user decryption of confidential balances | Implemented |
-| Arbitrary ERC-7984 decrypt by pasted address | Implemented |
+| Additional ERC-7984 self-decrypt utility | Bonus / experimental |
 | Hybrid registry plus local development source | Implemented |
 | Documentation for adding new pairs | See `docs/ADD-NEW-PAIR.md` |
 
@@ -81,14 +89,14 @@ Recommended demo path:
 3. Mint mock USDC.
 4. Shield USDCMock into cUSDCMock.
 5. Sign the EIP-712 user-decryption permit.
-6. Decrypt the confidential balance in-browser.
+6. Self-decrypt your own confidential balance in-browser.
 7. Unshield back to public USDCMock.
 
-## Arbitrary ERC-7984 decrypt
+## Additional self-decrypt utility
 
-WrapHub also includes an arbitrary decrypt tab.
+This utility attempts connected-wallet self-decryption for a pasted ERC-7984 token address when the token and wallet context support it. It is not a universal decrypt tool and should not be presented as a claim that any ERC-7984 token can always be decrypted.
 
-A user can paste an ERC-7984 token address on Sepolia and attempt to decrypt their own balance through the same EIP-712 self-decryption flow.
+WrapHub includes an additional tab where a user can paste a Sepolia ERC-7984 token address and attempt the same EIP-712 connected-wallet self-decryption flow.
 
 The app performs address validation and ERC-165 capability detection before attempting decrypt operations.
 
@@ -108,7 +116,7 @@ Key proven implementation details:
 - direct EIP-712 self-decryption path;
 - wrapper decimal normalization;
 - two-phase unshield/finalize states;
-- arbitrary ERC-7984 detection;
+- additional ERC-7984 self-decrypt utility detection;
 - wallet address masking in the demo UI.
 
 ## Local development
@@ -133,3 +141,14 @@ Production build output is generated from the app folder and published from app/
 ## License
 
 MIT
+
+
+## Limitations / Honest Scope
+
+- **Sepolia only.** No mainnet deployment, no mainnet claims.
+- **Not the official Zama registry.** WrapHub is an independent, community-built interface for exploring and testing Sepolia wrapper pairs. It is not the official Zama registry and should not be treated as an official listing.
+- **Not audited.** WrapHub itself has not undergone a third-party security audit.
+- **Not production-ready.** This is a hackathon build intended for demonstration and testing on testnet.
+- **Not mainnet-ready.** Do not deploy or rely on this for real-value assets.
+- **Wallet masking is UI hygiene, not cryptographic wallet privacy.** Address masking shortens displayed strings for readability. It does not obscure, encrypt, or protect wallet identity at the protocol level.
+- **Additional ERC-7984 self-decrypt utility is not a universal decrypt guarantee.** It only attempts connected-wallet self-decryption when the token and wallet context support it.

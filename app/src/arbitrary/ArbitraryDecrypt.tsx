@@ -1,4 +1,4 @@
-// Arbitrary ERC-7984 decrypt — Step 6. Read-only. Bounty requirement:
+// Additional ERC-7984 self-decrypt utility — read-only. Bounty requirement:
 // "Decrypt balances of any ERC-7984 token in wallet via EIP-712 user-decryption."
 // Reuses the validated canon: confidentialBalanceOf -> grantPermit -> hasPermit -> decryptValues.
 // ERC-165 detection via SDK-native Token.isConfidential(). No mint/shield/unshield here.
@@ -97,11 +97,11 @@ export default function ArbitraryDecrypt() {
   }
 
   return (
-    <section className="arb" aria-label="Decrypt any ERC-7984 token">
+    <section className="arb" aria-label="Additional ERC-7984 self-decrypt utility">
       <header>
-        <h2 className="arb-title">Decrypt any ERC-7984 balance</h2>
+        <h2 className="arb-title">Additional ERC-7984 self-decrypt</h2>
         <p className="arb-sub">
-          Paste any Sepolia contract address to check if it supports the ERC-7984 confidential token standard and decrypt your own balance via the secure EIP-712 decryption flow. (Read-only)
+          Paste a Sepolia ERC-7984 contract address to check if it supports the ERC-7984 confidential token standard and decrypt your own balance via the secure EIP-712 decryption flow. (Read-only)
         </p>
       </header>
 

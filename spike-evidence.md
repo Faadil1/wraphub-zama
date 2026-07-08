@@ -44,16 +44,19 @@ Docs list URL:
 - Decrypted result vs expected:
 - Relayer URL / API key required?:
 
-## S4b — Arbitrary ERC-7984 decrypt
-- Address used + registry or NON-registry:
-- Interface check result:
-- EIP-712 evidence + decrypted balance:
-- If no non-registry token found:
+## S4b — Additional ERC-7984 self-decrypt utility
+- Address used + registry or NON-registry: Not separately recorded in this file; see app utility and linked test/evidence files.
+- Interface check result: Address validation and ERC-165 capability detection is performed before attempting decrypt operations.
+- EIP-712 evidence + decrypted balance: Attempt connected-wallet self-decryption for a pasted Sepolia ERC-7984 token address when the token and wallet context support it.
+- If no non-registry token found: Not separately recorded in this file; see linked evidence/result files.
+- Scope: utility only; not a universal decrypt guarantee.
 
-## S5 — Browser / relayer / deployment viability
-- Browser flow result:
-- Architecture:
-- Live deployment path feasible:
+## S5 — Browser / user-decryption / deployment viability
+- Browser flow result: Browser Zama SDK path verified on Sepolia. The app could read an encrypted balance handle, the connected wallet signed an EIP-712 user-decryption permit, `hasPermit` returned true, and `decryptValues` returned plaintext.
+- Architecture: connected-wallet self-decryption through the browser Zama SDK path.
+- Live deployment path feasible: yes, for the connected-wallet self-decryption path tested on Sepolia.
+- Note: the tested wallet had no remaining confidential cUSDCMock balance after cleanup, so plaintext 0 was expected.
+- Scope: this proves browser viability for connected-wallet self-decryption, not a universal decrypt guarantee.
 
 ## S6 — Hybrid source + extensibility
 - pairs.local.json sample:
@@ -276,7 +279,7 @@ Direct user-decryption proof:
 
 Interpretation:
 - EIP-712 direct user-decryption path is confirmed.
-- Arbitrary ERC-7984 decrypt UX should use:
+- Additional self-decrypt utility UX should use:
   1. read `confidentialBalanceOf(user)`
   2. `sdk.permits.grantPermit([tokenAddress])`
   3. `sdk.decryption.decryptValues([{ encryptedValue, contractAddress: tokenAddress }])`
